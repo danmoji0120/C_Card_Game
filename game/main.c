@@ -343,6 +343,4 @@ void main() {
 
 	Main_Screen();
 
-
-	_getch();
 }
