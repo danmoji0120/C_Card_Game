@@ -123,7 +123,8 @@ void Main_Select_Clear() //선택 표시 갱신
 
 void battle_Select_Clear() //선택 표시 갱신
 {
-	for (int i = 2;i <= 52;i++) {
+	int i;
+	for (i = 2;i <= 52;i++) {
 		Gotoxy(i, 22);
 		printf("  ");
 		Gotoxy(i, 29);
@@ -138,13 +139,13 @@ void textcolor(int colorNum) {
 void Draw_Card(int x, int y, int type, int power, BOOL flip)
 {
 	enum ColorType { RED = 12, BLUE = 9, GREEN = 10, WHITE = 15 }COLOR;
-
+	int i,j;
 	switch (type)
 	{
 	case 1: //공격 (빨강)
 		if (flip == TRUE) {
-			for (int i = x; i <= x + 6;i += 2) {
-				for (int j = y; j <= y + 5;j++) {
+			for (i = x; i <= x + 6;i += 2) {
+				for (j = y; j <= y + 5;j++) {
 					Gotoxy(i, j);
 					textcolor(RED);
 					printf("▩");
@@ -157,8 +158,8 @@ void Draw_Card(int x, int y, int type, int power, BOOL flip)
 				printf("%d", power);
 		}
 		else {
-			for (int i = x; i <= x + 6;i += 2) {
-				for (int j = y; j <= y + 5;j++) {
+			for (i = x; i <= x + 6;i += 2) {
+				for (j = y; j <= y + 5;j++) {
 					Gotoxy(i, j);
 					textcolor(RED);
 					printf("▩");
@@ -169,8 +170,8 @@ void Draw_Card(int x, int y, int type, int power, BOOL flip)
 		break;
 	case 2: //방어 (파랑)
 		if (flip == TRUE) {
-			for (int i = x; i <= x + 6;i += 2) {
-				for (int j = y; j <= y + 5;j++) {
+			for (i = x; i <= x + 6;i += 2) {
+				for (j = y; j <= y + 5;j++) {
 					Gotoxy(i, j);
 					textcolor(BLUE);
 					printf("▩");
@@ -183,8 +184,8 @@ void Draw_Card(int x, int y, int type, int power, BOOL flip)
 				printf("%d", power);
 		}
 		else {
-			for (int i = x; i <= x + 6;i += 2) {
-				for (int j = y; j <= y + 5;j++) {
+			for (i = x; i <= x + 6;i += 2) {
+				for (j = y; j <= y + 5;j++) {
 					Gotoxy(i, j);
 					textcolor(BLUE);
 					printf("▩");
@@ -195,8 +196,8 @@ void Draw_Card(int x, int y, int type, int power, BOOL flip)
 		break;
 	case 3: //치료 (초록)
 		if (flip == TRUE) {
-			for (int i = x; i <= x + 6;i += 2) {
-				for (int j = y; j <= y + 5;j++) {
+			for (i = x; i <= x + 6;i += 2) {
+				for (j = y; j <= y + 5;j++) {
 					Gotoxy(i, j);
 					textcolor(GREEN);
 					printf("▩");
@@ -209,8 +210,8 @@ void Draw_Card(int x, int y, int type, int power, BOOL flip)
 				printf("%d", power);
 		}
 		else {
-			for (int i = x; i <= x + 6;i += 2) {
-				for (int j = y; j <= y + 5;j++) {
+			for (i = x; i <= x + 6;i += 2) {
+				for (j = y; j <= y + 5;j++) {
 					Gotoxy(i, j);
 					textcolor(GREEN);
 					printf("▩");
@@ -330,31 +331,31 @@ void Battle_Display_Update() //배틀화면 ui 표시
 
 void Card_remover()
 {
-	int i;
+	int i,x,y;
 	for (i = 0;i <= 4;i++) { //플레이어 덱 정리
-		for (int x = 4 + (10 * i); x <= 4 + (10 * i) + 6; x += 2) {
-			for (int y = 23; y <= 23 + 5;y++) {
+		for (x = 4 + (10 * i); x <= 4 + (10 * i) + 6; x += 2) {
+			for (y = 23; y <= 23 + 5;y++) {
 				Gotoxy(x, y);
 				printf("  ");
 			}
 		}
 	}
 	for (i = 0;i <= 4;i++) { //적 덱 정리
-		for (int x = 28 + (10 * i); x <= 28 + (10 * i) + 6; x += 2) {
-			for (int y = 2; y <= 2 + 5;y++) {
+		for (x = 28 + (10 * i); x <= 28 + (10 * i) + 6; x += 2) {
+			for (y = 2; y <= 2 + 5;y++) {
 				Gotoxy(x, y);
 				printf("  ");
 			}
 		}
 	}
-	for (int x = 24; x <= 30; x += 2) { //플레이어 소환카드정리
-		for (int y = 14; y <= 19;y++) {
+	for (x = 24; x <= 30; x += 2) { //플레이어 소환카드정리
+		for (y = 14; y <= 19;y++) {
 			Gotoxy(x, y);
 			printf("  ");
 		}
 	}
-	for (int x = 48; x <= 54; x += 2) { //적 소환카드정리
-		for (int y = 11; y <= 16;y++) {
+	for (x = 48; x <= 54; x += 2) { //적 소환카드정리
+		for (y = 11; y <= 16;y++) {
 			Gotoxy(x, y);
 			printf("  ");
 		}
