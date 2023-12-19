@@ -412,11 +412,21 @@ void Battle_Round_Result(BOOL player_win)
 		break;
 	case 2: //방어
 		if (player_win == TRUE) {
-			GP_Guard += Card[0] / 2;
+			if ((Card[0] / 2) < 1) {
+				GP_Guard += 1;
+			}
+			else {
+				GP_Guard += Card[0] / 2;
+			}
 			win_sound();
 		}
 		else {
-			GE_Guard += Card[0] / 2;
+			if ((Card[0] / 2) < 1) {
+				GE_Guard += 1;
+			}
+			else {
+				GE_Guard += Card[0] / 2;
+			}
 			defeat_sound();
 		}
 		break;
@@ -444,9 +454,13 @@ void Battle_Round_Result(BOOL player_win)
 	Sleep(500);
 }
 
-void Battle_system()
+void Battle_system(BOOL intelligence)
 {
 	int i;
+
+	int P_AT_Card = 0, P_GU_Card = 0, P_HE_Card = 0; // 플레이어 타입별 카드갯수
+
+	int E_AT_Card_max[2], E_GU_Card_max[2], E_HE_Card_max[2]; //적 카드사용을 위한 가장 강한 카드([0] = power,[1] = 존재여부 (0 = 없음, 1 = 있음))
 
 	while (GP_HP > 0 && GE_HP > 0) {
 
@@ -455,6 +469,18 @@ void Battle_system()
 		for (i = 0;i <= 4;i++) { //[0][i] = power, [1][i] = type
 			P_Card[0][i] = rand() % 10 + 1;
 			P_Card[1][i] = rand() % 3 + 1; // 1=공격(빨강), 2=방어(파랑), 3=치료(초록)
+
+			switch (P_Card[1][i]) { //플레이어 타입별 카드갯수 저장
+			case 1:
+				P_AT_Card++;
+				break;
+			case 2:
+				P_GU_Card++;
+				break;
+			case 3:
+				P_HE_Card++;
+				break;
+			}
 		}
 		for (i = 0;i <= 4;i++) {
 			Sleep(500);
@@ -463,11 +489,40 @@ void Battle_system()
 		}
 		Sleep(200);
 
+		E_AT_Card_max[0] = 0; //초기값
+		E_GU_Card_max[0] = 0; 
+		E_HE_Card_max[0] = 0; 
+
+		E_AT_Card_max[1] = 0; //0 = 없음, 1 = 있음
+		E_GU_Card_max[1] = 0;
+		E_HE_Card_max[1] = 0; 
+
 		srand(time(NULL));
 
 		for (i = 0;i <= 4;i++) { //Enemy
 			E_Card[0][i] = rand() % 10 + 1;
 			E_Card[1][i] = rand() % 3 + 1; // 1=공격(빨강), 2=방어(파랑), 3=치료(초록)
+
+			switch (E_Card[1][i]) {
+			case 1:
+				if (E_Card[0][i] > E_AT_Card_max[0]) {
+					E_AT_Card_max[0] = E_Card[0][i];
+					E_AT_Card_max[1] = 1;
+				}
+				break;
+			case 2:
+				if (E_Card[0][i] > E_GU_Card_max[0]) {
+					E_GU_Card_max[0] = E_Card[0][i];
+					E_GU_Card_max[1] = 1;
+				}
+				break;
+			case 3:
+				if (E_Card[0][i] > E_HE_Card_max[0]) {
+					E_HE_Card_max[0] = E_Card[0][i];
+					E_HE_Card_max[1] = 1;
+				}
+				break;
+			}
 		}
 		for (i = 0;i <= 4;i++) {
 			Sleep(500);
@@ -488,11 +543,203 @@ void Battle_system()
 
 		srand(time(NULL));
 
-		i = rand() % 5 + 1; //랜덤 카드 고르기
+		//적 카드 선정 (1 = 전략적, 0 = 랜덤)
+		if (intelligence) { //전략적 판단
+			if (P_AT_Card >= 3) { //공격카드가 많을때
+				if (GE_Guard == 0) { //적 방어막이 없는가?
+					if (E_GU_Card_max[1] == 1) {// 방어우선
+						E_Select[1] = 2;
+						E_Select[0] = E_GU_Card_max[0];
+					}
+					else if (E_HE_Card_max[1] == 1) {
+						E_Select[1] = 3;
+						E_Select[0] = E_HE_Card_max[0];
+					}
+					else {
+						E_Select[1] = 1;
+						E_Select[0] = E_AT_Card_max[0];
+					}
+				}
+				else {
+					if (E_AT_Card_max[1] == 1) { // 공격우선
+						E_Select[1] = 1;
+						E_Select[0] = E_AT_Card_max[0];
+					}
+					else if (E_GU_Card_max[1] == 1) {
+						E_Select[1] = 2;
+						E_Select[0] = E_GU_Card_max[0];
+					}
+					else {
+						E_Select[1] = 3;
+						E_Select[0] = E_HE_Card_max[0];
+					}
+				}
+			}
+			else if (P_GU_Card >= 3) { //방어카드가 많을때
+				if (GE_HP >= (GE_FullHP / 100) * 30) { //적 체력이 많은가?
+					if (E_GU_Card_max[1] == 1) {// 방어우선
+						E_Select[1] = 2;
+						E_Select[0] = E_GU_Card_max[0];
+					}
+					else if (E_HE_Card_max[1] == 1) {
+						E_Select[1] = 3;
+						E_Select[0] = E_HE_Card_max[0];
+					}
+					else {
+						E_Select[1] = 1;
+						E_Select[0] = E_AT_Card_max[0];
+					}
+				}
+				else {
+					if (GP_Guard > 0) { //플레이어 방어막이 있는가?
+						if (E_GU_Card_max[1] == 1) {// 방어우선
+							E_Select[1] = 2;
+							E_Select[0] = E_GU_Card_max[0];
+						}
+						else if (E_HE_Card_max[1] == 1) {
+							E_Select[1] = 3;
+							E_Select[0] = E_HE_Card_max[0];
+						}
+						else {
+							E_Select[1] = 1;
+							E_Select[0] = E_AT_Card_max[0];
+						}
+					}
+					else {
+						if (E_AT_Card_max[1] == 1) { // 공격우선
+							E_Select[1] = 1;
+							E_Select[0] = E_AT_Card_max[0];
+						}
+						else if (E_GU_Card_max[1] == 1) {
+							E_Select[1] = 2;
+							E_Select[0] = E_GU_Card_max[0];
+						}
+						else {
+							E_Select[1] = 3;
+							E_Select[0] = E_HE_Card_max[0];
+						}
+					}
+				}
+			}
+			else if (P_HE_Card >= 3) { //회복카드가 많을때
+				if (GP_HP >= (GP_FullHP / 100) * 30) { // 플레이어 체력이 많은가?
+					if (GE_HP >= (GE_FullHP / 100) * 30) { // 적 체력이 많은가?
+						if (P_GU_Card == 0) { // 플레이어 방어카드가 없는가?
+							if (E_AT_Card_max[1] == 1) { // 공격우선
+								E_Select[1] = 1;
+								E_Select[0] = E_AT_Card_max[0];
+							}
+							else if (E_GU_Card_max[1] == 1) {
+								E_Select[1] = 2;
+								E_Select[0] = E_GU_Card_max[0];
+							}
+							else {
+								E_Select[1] = 3;
+								E_Select[0] = E_HE_Card_max[0];
+							}
+						}
+						else {
+							if (E_GU_Card_max[1] == 1) {// 방어우선
+								E_Select[1] = 2;
+								E_Select[0] = E_GU_Card_max[0];
+							}
+							else if (E_HE_Card_max[1] == 1) {
+								E_Select[1] = 3;
+								E_Select[0] = E_HE_Card_max[0];
+							}
+							else {
+								E_Select[1] = 1;
+								E_Select[0] = E_AT_Card_max[0];
+							}
+						}
+					}
+					else {
+						if (E_HE_Card_max[1] == 1) { //회복우선
+							E_Select[1] = 3;
+							E_Select[0] = E_HE_Card_max[0];
+						}
+						else if (E_AT_Card_max[1] == 1) {
+							E_Select[1] = 1;
+							E_Select[0] = E_AT_Card_max[0];
+						}
+						else {
+							E_Select[1] = 2;
+							E_Select[0] = E_GU_Card_max[0];
+						}
+					}
+				}
+				else {
+					if (E_AT_Card_max[1] == 1) { //공격우선
+						E_Select[1] = 1;
+						E_Select[0] = E_AT_Card_max[0];
+					}
+					else if (E_HE_Card_max[1] == 1) {
+						E_Select[1] = 3;
+						E_Select[0] = E_HE_Card_max[0];
+					}
+					else {
+						E_Select[1] = 2;
+						E_Select[0] = E_GU_Card_max[0];
+					}
+				}
+			}
+			else { //아 애매하네 모르겠다 랜덤돌릴까 말까
+				if (GE_HP >= (GE_FullHP / 100) * 30) { //적 체력이 많은가?
+					if (GE_Guard > 0) { //적 방어막이 있는가?
+						if (E_AT_Card_max[1] == 1) { //공격우선
+							E_Select[1] = 1;
+							E_Select[0] = E_AT_Card_max[0];
+						}
+						else if (E_HE_Card_max[1] == 1) {
+							E_Select[1] = 3;
+							E_Select[0] = E_HE_Card_max[0];
+						}
+						else {
+							E_Select[1] = 2;
+							E_Select[0] = E_GU_Card_max[0];
+						}
+					}
+					else {
+						if (E_GU_Card_max[1] == 1) {// 방어우선
+							E_Select[1] = 2;
+							E_Select[0] = E_GU_Card_max[0];
+						}
+						else if (E_HE_Card_max[1] == 1) {
+							E_Select[1] = 3;
+							E_Select[0] = E_HE_Card_max[0];
+						}
+						else {
+							E_Select[1] = 1;
+							E_Select[0] = E_AT_Card_max[0];
+						}
+					}
+				}
+				else {
+					if (E_HE_Card_max[1] == 1) { //회복우선
+						E_Select[1] = 3;
+						E_Select[0] = E_HE_Card_max[0];
+					}
+					else if (E_AT_Card_max[1] == 1) {
+						E_Select[1] = 1;
+						E_Select[0] = E_AT_Card_max[0];
+					}
+					else {
+						E_Select[1] = 2;
+						E_Select[0] = E_GU_Card_max[0];
+					}
+				}
+			}
+			
+		}
+		else { //랜덤 판단
+			i = rand() % 5 + 1; //랜덤 카드 고르기
 
-		E_Select[0] = E_Card[0][i-1];
+			E_Select[0] = E_Card[0][i - 1];
 
-		E_Select[1] = E_Card[1][i-1];
+			E_Select[1] = E_Card[1][i - 1];
+		}
+
+		
 		Beep(300, 50);
 		Draw_Card(48, 11, E_Select[1], E_Select[0], TRUE);
 
@@ -635,7 +882,7 @@ int Main_Screen() //메인 화면 출력
 				Beep(500, 25);
 				Sleep(10);
 				Beep(200, 25);
-				battle_Screen("슬라임");
+				battle_Screen("산적두목",FALSE);
 			}
 			else if (menu_num == 2) {
 				system("cls");
@@ -705,7 +952,7 @@ int Explanation_Screen() //게임 설명 화면 출력
 	}
 }
 
-int battle_Screen(char enemy_name[]) //인게임 시스템
+int battle_Screen(char enemy_name[],BOOL intelligence) //인게임 시스템
 {
 	enum ColorType { RED = 12, BLUE = 9, GREEN = 10, WHITE = 15 }COLOR;
 
@@ -738,12 +985,17 @@ int battle_Screen(char enemy_name[]) //인게임 시스템
 
 	Gotoxy(2, 1); //이름 출력
 	textcolor(RED);
-	printf("%s", enemy_name);
+	if (intelligence) {
+		printf("전략적인 %s", enemy_name);
+	}
+	else {
+		printf("멍청한 %s", enemy_name);
+	}
 	Gotoxy(74, 22);
 	textcolor(WHITE);
 	printf("본인");
 
-	Battle_system();
+	Battle_system(intelligence);
 	if (GP_HP > GE_HP) {
 		game_win();
 	}
