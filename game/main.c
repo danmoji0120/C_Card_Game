@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <stdlib.h>
 #include <time.h>
+#include <stdbool.h>
 #pragma warning(disable:6385)
 #pragma warning(disable:4244)
 #pragma warning(disable:4101)
