@@ -835,7 +835,7 @@ void Battle_system(BOOL intelligence)
 
 int Explanation_Screen();
 int Main_Screen();
-int battle_Screen(char enemy_name[]);
+int battle_Screen(char enemy_name[],BOOL intelligence);
 
 //화면 출력 함수
 
