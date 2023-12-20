@@ -8,6 +8,7 @@
 #pragma warning(disable:4244)
 #pragma warning(disable:4101)
  
+//설명문
 
 /*전역변수 선언*/
 int P_Card[2][5], P_Select[2]; //P_Select[0] = power, P_Select[1] = cost
@@ -883,7 +884,7 @@ int Main_Screen() //메인 화면 출력
 				Beep(500, 25);
 				Sleep(10);
 				Beep(200, 25);
-				battle_Screen("산적두목",FALSE);
+				battle_Screen("산적두목",TRUE);
 			}
 			else if (menu_num == 2) {
 				system("cls");
@@ -990,7 +991,7 @@ int battle_Screen(char enemy_name[],BOOL intelligence) //인게임 시스템
 		printf("전략적인 %s", enemy_name);
 	}
 	else {
-		printf("멍청한 %s", enemy_name);
+		printf("무식한 %s", enemy_name);
 	}
 	Gotoxy(74, 22);
 	textcolor(WHITE);
