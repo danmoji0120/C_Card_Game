@@ -836,7 +836,7 @@ void Battle_system(BOOL intelligence)
 
 int Explanation_Screen();
 int Main_Screen();
-int battle_Screen(char enemy_name[],BOOL intelligence);
+int Battle_Screen(char enemy_name[],BOOL intelligence);
 
 //화면 출력 함수
 
@@ -849,12 +849,12 @@ int Main_Screen() //메인 화면 출력
 	GE_Guard = 0;
 
 	system("mode con:cols=80 lines=11");        //화면크기
-	system("title [danmoji] test_game");    //게임이름
+	system("title [danmoji] 산적두목 잡기");    //게임이름
 
 	Square_OutLine(39, 10);
 
-	Gotoxy(35, 3); //메인화면 구성
-	printf("테스트게임");
+	Gotoxy(33, 3); //메인화면 구성
+	printf("산적두목  잡기");
 
 	Gotoxy(14, 6);
 	printf("게임시작");
@@ -884,7 +884,7 @@ int Main_Screen() //메인 화면 출력
 				Beep(500, 25);
 				Sleep(10);
 				Beep(200, 25);
-				battle_Screen("산적두목",TRUE);
+				Battle_Screen("산적두목",TRUE);
 			}
 			else if (menu_num == 2) {
 				system("cls");
@@ -938,7 +938,7 @@ int Explanation_Screen() //게임 설명 화면 출력
 
 
 	Gotoxy(0, 0);
-	printf("이 게임은 미완성입니다.\n\n이 게임은 5장을 카드중 1장을 골라 서로 겨루는 게임으로 빨강은 공격, 파랑은 방어, 초록은 회복을 나타냅니다.\n\n각 카드별 상성이 존재하며 이는 빨강(공격) -> 초록(회복) -> 파랑(방어) -> 빨강(공격)순 입니다. 만약 동일 타입의 카드라면 숫자가 높은 카드가 이깁니다,\n\n게임에서 이기려면 상대방의 체력을 0이하로 만들어야합니다.\n\n공격카드는 숫자만큼 데미지를 주고 방어카드는 숫자의 반만큼 방어막 포인트를 주며 회복카드는 숫자만큼 회복합니다.\n\n방어막 포인트는 공격을 숫자만큼 막아주며 숫자 이상의 공격을 받으면 공격을 막아내며 제거됩니다.\n\n조작은 화살표와 스페이스바입니다.");
+	printf("이 게임은 5장을 카드중 1장을 골라 서로 겨루는 게임으로 빨강은 공격, 파랑은 방어, 초록은 회복을 나타냅니다.\n\n각 카드별 상성이 존재하며 이는 빨강(공격) -> 초록(회복) -> 파랑(방어) -> 빨강(공격)순 입니다. 만약 동일 타입의 카드라면 숫자가 높은 카드가 이깁니다,\n\n게임에서 이기려면 상대방의 체력을 0이하로 만들어야합니다.\n\n공격카드는 숫자만큼 데미지를 주고 방어카드는 숫자의 반만큼 방어막 포인트를 주며 회복카드는 숫자만큼 회복합니다.\n\n방어막 포인트는 공격을 숫자만큼 막아주며 숫자 이상의 공격을 받으면 공격을 막아내며 제거됩니다.\n\n조작은 화살표와 스페이스바입니다.");
 
 	Gotoxy(62,29);
 	printf("돌아가려면 ESC..");
@@ -954,7 +954,7 @@ int Explanation_Screen() //게임 설명 화면 출력
 	}
 }
 
-int battle_Screen(char enemy_name[],BOOL intelligence) //인게임 시스템
+int Battle_Screen(char enemy_name[],BOOL intelligence) //인게임 시스템
 {
 	enum ColorType { RED = 12, BLUE = 9, GREEN = 10, WHITE = 15 }COLOR;
 
@@ -1008,6 +1008,7 @@ int battle_Screen(char enemy_name[],BOOL intelligence) //인게임 시스템
 	Main_Screen();
 	return 0;
 }
+
 
 /*메인코드*/
 
