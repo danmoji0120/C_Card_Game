@@ -10,7 +10,7 @@
  
 //설명문
 
-//for문, if문, while문, switch문과 2차원 변수를 사용하여 만든 간단한 카드게임
+//for문, if문, while문, switch문, 함수와 2차원 변수를 사용하여 만든 간단한 카드게임
 
 /*전역변수 선언*/
 int P_Card[2][5], P_Select[2]; //P_Select[0] = power, P_Select[1] = cost
